@@ -131,19 +131,23 @@ def interpret_command(data_json):
                 print("Updating all versions...")
                 boot_url = 'https://raw.githubusercontent.com/SuperBoss221/wash_mqtt/refs/heads/main/boot.py' # ควรเป็น .py
                 main_url = 'https://raw.githubusercontent.com/SuperBoss221/wash_mqtt/refs/heads/main/main.py' # ควรเป็น .py
+                wifi_url = 'https://raw.githubusercontent.com/SuperBoss221/wash_mqtt/refs/heads/main/wifi_manager.py' # ควรเป็น .py
                 wash_url = 'https://raw.githubusercontent.com/SuperBoss221/wash_mqtt/refs/heads/main/wash.py' # ควรเป็น .py
                 try:
                     response_boot = requests.get(boot_url)
                     if response_boot.status_code == 200:
                         with open('boot.py', 'w') as f: f.write(response_boot.text)
                 except : print(f"Error updating boot.py")
-
                 try:
                     response_main = requests.get(main_url)
                     if response_main.status_code == 200:
                         with open('main.py', 'w') as f: f.write(response_main.text)
                 except : print(f"Error updating main.py")
-
+                try:
+                    response_wifi = requests.get(wifi_url)
+                    if response_wifi.status_code == 200:
+                        with open('wifi_manager.py', 'w') as f: f.write(response_wifi.text)
+                except : print(f"Error updating wifi.py")
                 try:
                     response_wash = requests.get(wash_url)
                     if response_wash.status_code == 200:
