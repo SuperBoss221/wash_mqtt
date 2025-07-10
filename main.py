@@ -53,7 +53,7 @@ def get_device_serial_number():
 # MQTT Settings
 MQTT_BROKER = "34.124.162.209"
 MQTT_PORT = 1883
-MQTT_CLIENT_ID = ubinascii.hexlify(machine.unique_id()) # Unique ID for the device
+MQTT_CLIENT_ID = get_device_serial_number() # Unique ID for the device
 STATUS_TOPIC = b"washing_machine/" + MQTT_CLIENT_ID + b"/status"
 COMMAND_TOPIC = b"washing_machine/" + MQTT_CLIENT_ID + b"/commands"
 
