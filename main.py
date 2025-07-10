@@ -231,7 +231,7 @@ def connect_and_subscribe():
         return client
     except :
         print(f"Failed to connect to MQTT broker ",mqtt_offline)
-        if mqtt_offline >= 10 :
+        if mqtt_offline >= 5 :
                 WiFIManager.connect()
                 checkCnnect = 0
                 while True:
@@ -246,16 +246,6 @@ def connect_and_subscribe():
                             time.sleep(10)
         mqtt_offline += 1
         return None
-
-# ... ส่วนโค้ดเดิม ...
-
-# เปลี่ยน logic ของ interpret_status_data (ส่วนนี้จะถูกตัดออกไป)
-# def interpret_status_data(data):
-#     try:
-#         # ... โค้ด HTTP เดิม ...
-#     except:
-#         # ... โค้ด HTTP เดิม ...
-
 
 # --- WIFI Connection ---
 WiFIManager = WifiManager()
@@ -286,7 +276,7 @@ mqtt_client = None
 while mqtt_client is None:
     mqtt_client = connect_and_subscribe()
     if mqtt_client is None:
-        #print("Retrying MQTT connection in 5 seconds...")
+        print("Retrying MQTT connection in 5 seconds...")
         time.sleep(5)
 
 # Main loop for publishing status and checking for MQTT messages
@@ -340,4 +330,5 @@ while True:
         led.value(0)
         time.sleep(5)
         machine.reset()
+time.sleep(5)
 machine.reset()
