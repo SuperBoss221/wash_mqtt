@@ -140,7 +140,15 @@ class WifiManager:
         server_socket.bind(('', 80))
         server_socket.listen(10) 
         print('Connect to', self.ap_ssid, 'with the password', self.ap_password, 'and access the captive portal at', self.wlan_ap.ifconfig()[0])
+        sxload = 0
+         # เพิ่มตัวแปรสำหรับจับเวลาเริ่มต้น
+        start_time = time.time()
         while True:
+            # ตรวจสอบว่าผ่านไป 3 นาทีแล้วหรือยัง
+            if (time.time() - start_time) > 180: # 180 วินาที = 3 นาที
+                print("3 นาทีผ่านไป, กำลังรีสตาร์ทอุปกรณ์...")
+                machine.reset()
+            print(sxload)
             if self.wlan_sta.isconnected():
                 self.wlan_ap.active(False)
                 if self.reboot:
@@ -149,6 +157,7 @@ class WifiManager:
                     machine.reset()
             self.client, addr = server_socket.accept()
             try:
+                sxload += 1
                 self.client.settimeout(5.0)
                 self.request = b''
                 try:
