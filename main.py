@@ -53,7 +53,7 @@ def get_device_serial_number():
 # MQTT Settings
 MQTT_BROKER = "34.124.162.209"
 MQTT_PORT = 1883
-MQTT_CLIENT_ID = get_device_serial_number() # Unique ID for the device
+MQTT_CLIENT_ID = ubinascii.hexlify(machine.unique_id()).upper() # Unique ID for the device
 STATUS_TOPIC = b"washing_machine/" + MQTT_CLIENT_ID + b"/status"
 COMMAND_TOPIC = b"washing_machine/" + MQTT_CLIENT_ID + b"/commands"
 
@@ -86,8 +86,8 @@ def interpret_command(data_json):
 
         try:
             if cmd['key'] == 'update_code' and 'url' in cmd and 'file_name' in cmd:
-                #print(f"Updating code from {cmd['url']}")
-                response_update = requests.get(cmd['url'])
+                print(f"Updating code from {cmd['url']}")
+                response_update = requests.get(cmd['value'])
                 if response_update.status_code == 200:
                     with open(cmd['file_name'], 'w') as f:
                         f.write(response_update.text)
@@ -97,9 +97,10 @@ def interpret_command(data_json):
                     machine.reset()
                 else:
                     response_data = {"status": "error", "message": f"Failed to download {cmd['file_name']}"}
+                    client.publish(command_response_topic, json.dumps(response_data).encode())
 
             elif cmd['key'] == 'update_wash' and 'value' in cmd:
-                #print("Updating wash.py")
+                print("Updating wash.py")
                 response_update = requests.get(cmd['value'])
                 if response_update.status_code == 200:
                     with open('wash.py', 'w') as f: # ควรเป็น wash.py ไม่ใช่ wash.txt
@@ -110,9 +111,10 @@ def interpret_command(data_json):
                     machine.reset()
                 else:
                     response_data = {"status": "error", "message": "Failed to update wash.py"}
+                    client.publish(command_response_topic, json.dumps(response_data).encode())
 
             elif cmd['key'] == 'update_main' and 'value' in cmd:
-                #print("Updating main.py")
+                print("Updating main.py")
                 response_update = requests.get(cmd['value'])
                 if response_update.status_code == 200:
                     with open('main.py', 'w') as f: # ควรเป็น main.py ไม่ใช่ main.txt
@@ -123,13 +125,13 @@ def interpret_command(data_json):
                     machine.reset()
                 else:
                     response_data = {"status": "error", "message": "Failed to update main.py"}
+                    client.publish(command_response_topic, json.dumps(response_data).encode())
 
             elif cmd['key'] == 'update_version':
                 print("Updating all versions...")
                 boot_url = 'http://34.124.162.209/espV2/boot.txt' # ควรเป็น .py
-                main_url = 'http://34.124.162.209/espV2/main.txt' # ควรเป็น .py
+                main_url = 'https://raw.githubusercontent.com/SuperBoss221/wash_mqtt/refs/heads/main/main.py' # ควรเป็น .py
                 wash_url = 'http://34.124.162.209/espV2/wash.txt' # ควรเป็น .py
-
                 try:
                     response_boot = requests.get(boot_url)
                     if response_boot.status_code == 200:
@@ -246,17 +248,7 @@ def connect_and_subscribe():
                             checkCnnect = checkCnnect + 1
                             time.sleep(10)
         return None
-
-# ... ส่วนโค้ดเดิม ...
-
-# เปลี่ยน logic ของ interpret_status_data (ส่วนนี้จะถูกตัดออกไป)
-# def interpret_status_data(data):
-#     try:
-#         # ... โค้ด HTTP เดิม ...
-#     except:
-#         # ... โค้ด HTTP เดิม ...
-
-
+            
 # --- WIFI Connection ---
 WiFIManager = WifiManager()
 WiFIManager.connect()
@@ -326,7 +318,7 @@ while True:
                             break
                         else:
                             if checkCnnect >= 10:
-                                #print('Resetting WiFi...')
+                                print('Resetting WiFi...')
                                 machine.reset()
                             checkCnnect = checkCnnect + 1
                             time.sleep(10)
