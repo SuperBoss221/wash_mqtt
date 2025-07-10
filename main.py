@@ -95,6 +95,7 @@ def interpret_command(data_json):
                     client.publish(command_response_topic, json.dumps(response_data).encode())
                     time.sleep(5)
                     machine.reset()
+                    return True
                 else:
                     response_data = {"status": "error", "message": f"Failed to download {cmd['file_name']}"}
 
@@ -108,6 +109,7 @@ def interpret_command(data_json):
                     client.publish(command_response_topic, json.dumps(response_data).encode())
                     time.sleep(5)
                     machine.reset()
+                    return True
                 else:
                     response_data = {"status": "error", "message": "Failed to update wash.py"}
 
@@ -121,6 +123,7 @@ def interpret_command(data_json):
                     client.publish(command_response_topic, json.dumps(response_data).encode())
                     time.sleep(5)
                     machine.reset()
+                    return True
                 else:
                     response_data = {"status": "error", "message": "Failed to update main.py"}
 
@@ -152,6 +155,7 @@ def interpret_command(data_json):
                 led.value(0)
                 time.sleep(2)
                 machine.reset()
+                return True
 
             elif cmd['key'] == 'reset_error':
                 #print("Resetting error...")
@@ -160,7 +164,7 @@ def interpret_command(data_json):
                 client.publish(command_response_topic, json.dumps(response_data).encode())
                 led.value(0)
                 machine.reset()
-
+                return True
             elif cmd['key'] == 'reset_wifi':
                 #print("Resetting WiFi...")
                 resetWIFI()
@@ -169,6 +173,7 @@ def interpret_command(data_json):
                 time.sleep(5)
                 led.value(0)
                 machine.reset()
+                return True
 
             elif cmd['key'] == 'get_status':
                 #print("Getting status...")
@@ -246,6 +251,16 @@ def connect_and_subscribe():
                             time.sleep(10)
         mqtt_offline += 1
         return None
+
+# ... ส่วนโค้ดเดิม ...
+
+# เปลี่ยน logic ของ interpret_status_data (ส่วนนี้จะถูกตัดออกไป)
+# def interpret_status_data(data):
+#     try:
+#         # ... โค้ด HTTP เดิม ...
+#     except:
+#         # ... โค้ด HTTP เดิม ...
+
 
 # --- WIFI Connection ---
 WiFIManager = WifiManager()
@@ -330,5 +345,4 @@ while True:
         led.value(0)
         time.sleep(5)
         machine.reset()
-time.sleep(5)
 machine.reset()
